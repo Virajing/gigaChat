@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-const connect = require('../db/mongodb');
+const connect = require('./db/mongodb');
 const path = require('path');
-const userRoutes = require('../routes/userRoutes');
-const adminRoutes = require('../routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const cookieParser = require('cookie-parser');
-const profileRoutes = require('../routes/profileRoutes/userProfile');
+const profileRoutes = require('./routes/profileRoutes/userProfile');
 
 // Middleware for static files
 app.use(express.static(path.join(__dirname, 'public')));
