@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>My Posts:</h1>
+<% posts.forEach(post => { %>
+    <div id="post-<%= post._id %>">
+        <strong><%= post.sender %></strong>: <%= post.content %>
+        <p>Likes: <span id="likes-<%= post._id %>"><%= post.likes %></span></p>
+
+        <!-- Like Button -->
+        <button id="like-btn-<%= post._id %>" 
+                onclick="toggleLike('<%= post._id %>')" 
+                data-liked="<%= post.likedBy.includes(post.sender) %>">
+            <%= post.likedBy.includes(post.sender) ? 'Dislike' : 'Like' %>
+        </button>
+
+    </div>
+<% }); %>
+
+<script>
+    function toggleLike(postId) {
+        fetch('/profile/like-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`likes-${postId}`).innerText = data.likes;
+                let btn = document.getElementById(`like-btn-${postId}`);
+                if (data.liked) {
+                    btn.innerText = "Dislike";
+                    btn.dataset.liked = "true";
+                } else {
+                    btn.innerText = "Like";
+                    btn.dataset.liked = "false";
+                }
+            } else {
+                alert("Error toggling like");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+
+</body>
+</html>
