@@ -7,8 +7,8 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const verify = require('../middlewares/jwtVerify');  // Middleware import
 const profileRoutes = require('./profileRoutes/userProfile');
 const post = require('../models/msg');
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+router.set('view engine', 'ejs');
+router.set('views', path.join(__dirname, 'views'));
 
 
 router.get('/', function (req, res) {
