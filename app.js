@@ -6,6 +6,8 @@ const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cookieParser = require('cookie-parser');
 const profileRoutes = require('./routes/profileRoutes/userProfile');
+require('dotenv').config();
+const port = process.env.PORT;
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -21,4 +23,6 @@ app.use('/', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/profile', profileRoutes);
 
-module.exports = app;
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}/`);
+});
