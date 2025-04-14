@@ -1,0 +1,23 @@
+<!-- Search and Delete -->
+<div class="p-6 bg-white rounded-lg shadow-md max-w-xl mx-auto mt-10">
+    <h2 class="text-xl font-semibold mb-4">Search & Delete Users</h2>
+    <form action="/admin/delete-users" method="GET" class="mb-4">
+      <input type="text" name="search" placeholder="Search by username" class="p-2 border border-gray-300 rounded w-full" />
+    </form>
+  
+    <% if (users.length > 0) { %>
+      <ul>
+        <% users.forEach(user => { %>
+          <li class="flex justify-between items-center border-b py-2">
+            <span><%= user.username %></span>
+            <form action="/admin/delete-user/<%= user._id %>" method="POST">
+              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="text-gray-500 text-sm">No users found.</p>
+    <% } %>
+  </div>
+  

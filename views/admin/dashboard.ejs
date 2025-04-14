@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md p-5 space-y-4">
+    <h2 class="text-2xl font-bold text-orange-500 mb-4">Admin Panel</h2>
+    <nav class="flex flex-col space-y-2">
+      <a href="/admin/home" class="text-gray-700 hover:text-orange-500">🏠 Home</a>
+      <a href="/admin/delete-users" class="text-gray-700 hover:text-orange-500">🗑️ Delete Users</a>
+      <a href="/admin/create-admin" class="text-gray-700 hover:text-orange-500">➕ Create Admin</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <h1 class="text-3xl font-semibold text-gray-800 mb-6">📊 Posts Overview</h1>
+
+    <!-- Chart Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <canvas id="postsChart" height="100"></canvas>
+    </div>
+  </main>
+
+  <!-- Chart Script -->
+  <script>
+    const ctx = document.getElementById('postsChart').getContext('2d');
+    const postsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: <%- JSON.stringify(labels) %>, // e.g., ['Jan', 'Feb', 'Mar']
+        datasets: [{
+          label: 'Number of Posts',
+          data: <%- JSON.stringify(data) %>, // e.g., [12, 19, 3]
+          backgroundColor: 'rgba(255, 115, 0, 0.8)',
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

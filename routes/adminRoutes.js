@@ -26,9 +26,13 @@ router.get('/adminGiga', (req, res) => {
 });
 
 // Admin Dashboard (protected)
-router.get('/home', adminVerify, (req, res) => {
-    res.send('Welcome to the Admin Dashboard!');
-});
+router.get('/home', adminVerify, async (req, res) => {
+    // Example static data
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr'];
+    const data = [12, 19, 3, 5]; // fetch from DB if needed
+  
+    res.render('./admin/dashboard', { labels, data });
+  });
 
 // Render Login/Register Page with messages
 router.get('/login', (req, res) => {
