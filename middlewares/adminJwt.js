@@ -1,22 +1,19 @@
-// middlewares/jwtVerify.js
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const SECRET_KEY = process.env.ADMIN_SECRET_KEY;  // Same key for signing and verifying tokens
+const SECRET_KEY = process.env.ADMIN_SECRET_KEY; 
+module.exports = (req, res, next) => {
+  const token = req.cookies.admintoken;
 
-const protectRoute = (req, res, next) => {
-    try {
-        const token = req.cookies.authToken; // Access token from cookie
+  if (!token) {
+    return res.status(401).redirect('/login');
+  }
 
-        if (!token) {
-            return res.status(401).redirect('/admin/login');
-        }
-
-        const verifiedUser = jwt.verify(token, SECRET_KEY);  // Verify JWT
-        req.user = verifiedUser;  // Attach user info to req.user if needed
-        next();  // Pass control to the next middleware/route
-    } catch (error) {
-        console.error('JWT Verification Error:', error.message);
-        res.status(403).redirect('/admin/login')}
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    console.log("Decoded Token:", decoded);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error("JWT Verification Error:", err.message);
+    return res.status(403).send('Invalid Token');
+  }
 };
-
-module.exports = protectRoute;

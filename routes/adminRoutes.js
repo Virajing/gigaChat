@@ -1,38 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const admin = require('../models/admin');
-const verify = require('../middlewares/jwtVerify');
 const adminVerify = require('../middlewares/adminJwt');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const realuniPass = process.env.UNI_PASS;
-const SECRET_KEY = process.env.SECRET_KEY || 'your_default_secret';
+const SECRET_KEY = process.env.ADMIN_SECRET_KEY;
 
 // Helper function to generate token and set cookie
 function generateTokenAndSetCookie(res, payload) {
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '90d' });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
 
     res.cookie('admintoken', token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production', // only secure in production
         sameSite: 'Strict',
-        maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
+        maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
     });
 }
 
-// Routes
+// Redirect to home
 router.get('/adminGiga', (req, res) => {
-    res.redirect('/home');
+    res.redirect('/admin/home');
 });
 
+// Admin Dashboard (protected)
 router.get('/home', adminVerify, (req, res) => {
-    res.send('admin page');
+    res.send('Welcome to the Admin Dashboard!');
 });
 
+// Render Login/Register Page with messages
 router.get('/login', (req, res) => {
-    res.render("admin/login", { msg: "Invalid credentials", formType: "login" }); // For login errors
-res.render("admin/login", { msg: "Registration failed", formType: "register" }); // For register errors
+    const { msg = "", formType = "login" } = req.query;
+    res.render("admin/login", { msg, formType });
+    console.log("Incoming cookies:", req.cookies);
+console.log("admintoken:", req.cookies.admintoken);
+
 });
 
 // Admin Registration
@@ -42,11 +46,11 @@ router.post('/register', async (req, res) => {
         const existingUser = await admin.findOne({ username });
 
         if (existingUser) {
-            return res.render('./admin/login', { msg: 'User already exists' });
+            return res.redirect('/admin/login?msg=User+already+exists&formType=register');
         }
 
         if (unipass !== realuniPass) {
-            return res.render('./admin/login', { msg: 'Invalid credentials' });
+            return res.redirect('/admin/login?msg=Invalid+credentials&formType=register');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,7 +75,7 @@ router.post('/login', async (req, res) => {
         const existingUser = await admin.findOne({ username });
 
         if (!existingUser) {
-            return res.render('./admin/login', { msg: 'Incorrect credentials' });
+            return res.redirect('/admin/login?msg=Incorrect+credentials&formType=login');
         }
 
         const validPassword = await bcrypt.compare(password, existingUser.password);
@@ -81,12 +85,18 @@ router.post('/login', async (req, res) => {
             generateTokenAndSetCookie(res, payload);
             return res.redirect('/admin/home');
         } else {
-            return res.render('./admin/login', { msg: 'Incorrect credentials' });
+            return res.redirect('/admin/login?msg=Incorrect+credentials&formType=login');
         }
     } catch (error) {
         console.error('Login Error:', error);
         res.status(500).send('Server error during login');
     }
+});
+
+// Admin Logout
+router.get('/logout', (req, res) => {
+    res.clearCookie('admintoken');
+    res.redirect('/admin/login');
 });
 
 module.exports = router;
