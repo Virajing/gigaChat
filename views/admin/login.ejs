@@ -3,102 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login and Register Forms</title>
+  <title>Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <style>
-    #register-form {
-      display: none;
-    }
-  </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-400 to-orange-600">
+<body class="flex items-center justify-center h-screen bg-gradient-to-br from-orange-400 to-orange-600">
 
-  <div id="auth-container" class="bg-white shadow-2xl rounded-2xl p-10 w-96 transition-all">
-    <h2 id="form-title" class="text-2xl font-bold text-center text-orange-500 mb-4">Admin Login</h2>
+  <div id="auth-container" class="bg-white shadow-2xl rounded-2xl p-10 w-96">
+    <h2 class="text-2xl font-bold text-center text-orange-500 mb-6">Login</h2>
 
     <!-- Login Form -->
-    <form id="login-form" action="/admin/login" method="POST" class="space-y-5">
-      <% if (msg && formType === 'login') { %>
-        <p class="text-red-500 text-sm text-center"><%= msg %></p>
-      <% } %>
+    <form id="login-form" action="/login" method="POST" class="space-y-5">
       <div>
-        <label for="login-email" class="block font-medium text-gray-600">Username</label>
-        <input type="text" id="login-email" name="username" placeholder="Enter your username"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
+        <label for="login-email" class="block font-medium text-gray-600">Email</label>
+        <input type="email" id="login-email" name="email" placeholder="Enter your email"
+               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500">
       </div>
       <div>
         <label for="login-password" class="block font-medium text-gray-600">Password</label>
         <input type="password" id="login-password" name="password" placeholder="Enter your password"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
+               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500">
       </div>
-      <button type="submit" class="w-full p-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition">Login</button>
+      <button type="submit" class="w-full p-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600">Login</button>
     </form>
-
-    <!-- Register Form -->
-    <form id="register-form" action="/admin/register" method="POST" class="space-y-5">
-      <% if (msg && formType === 'register') { %>
-        <p class="text-red-500 text-sm text-center"><%= msg %></p>
-      <% } %>
-      <div>
-        <label for="name" class="block font-medium text-gray-600">Name</label>
-        <input type="text" id="name" name="name" placeholder="Your full name"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
-      </div>
-      <div>
-        <label for="username" class="block font-medium text-gray-600">Username</label>
-        <p class="text-xs text-gray-400">Can include @ . A-Z a-z</p>
-        <input type="text" id="username" name="username" placeholder="Choose a username"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
-      </div>
-      <div>
-        <label for="register-password1" class="block font-medium text-gray-600">Password</label>
-        <input type="password" id="register-password1" name="password" placeholder="Create a password"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
-      </div>
-      <div>
-        <label for="register-unipass" class="block font-medium text-gray-600">Admin Registration Password</label>
-        <input type="password" id="register-unipass" name="unipass" placeholder="Admin secret pass"
-               class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" required />
-      </div>
-      <button type="submit" class="w-full p-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition">Register</button>
-    </form>
-
-    <p class="text-center mt-4 text-sm">
-      <span id="toggle-text">Don't have an account?</span>
-      <button id="toggle-btn" type="button" class="text-orange-500 font-bold hover:underline">Register here</button>
-    </p>
   </div>
-
-  <script>
-    const toggleBtn = document.getElementById('toggle-btn');
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    const formTitle = document.getElementById('form-title');
-    const toggleText = document.getElementById('toggle-text');
-    const authContainer = document.getElementById('auth-container');
-
-    let isLogin = "<%= formType %>" === "login";
-
-
-    const updateFormDisplay = () => {
-      loginForm.style.display = isLogin ? 'block' : 'none';
-      registerForm.style.display = isLogin ? 'none' : 'block';
-      formTitle.textContent = isLogin ? 'Admin Login' : 'Register Admin';
-      toggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
-      toggleBtn.textContent = isLogin ? "Register here" : "Login here";
-
-      gsap.fromTo(authContainer, { x: isLogin ? 100 : -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' });
-    };
-
-    toggleBtn.addEventListener('click', () => {
-      isLogin = !isLogin;
-      updateFormDisplay();
-    });
-
-    // Initial display based on server-passed value
-    updateFormDisplay();
-  </script>
 
 </body>
 </html>

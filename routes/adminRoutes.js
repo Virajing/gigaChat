@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const Post = require('../models/msg');
 const { getPostsByTime } = require('../middlewares/postControll');
 const User = require('../models/user');
+require('dotenv').config();
+
 
 const realuniPass = process.env.UNI_PASS;
 const SECRET_KEY = process.env.ADMIN_SECRET_KEY;
@@ -114,33 +116,6 @@ console.log("admintoken:", req.cookies.admintoken);
 
 });
 
-// Admin Registration
-router.post('/register', async (req, res) => {
-    try {
-        const { name, username, password, unipass } = req.body;
-        const existingUser = await admin.findOne({ username });
-
-        if (existingUser) {
-            return res.redirect('/admin/login?msg=User+already+exists&formType=register');
-        }
-
-        if (unipass !== realuniPass) {
-            return res.redirect('/admin/login?msg=Invalid+credentials&formType=register');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new admin({ name, username, password: hashedPassword });
-        await newUser.save();
-
-        const payload = { name, username };
-        generateTokenAndSetCookie(res, payload);
-
-        return res.redirect('/admin/home');
-    } catch (error) {
-        console.error('Registration Error:', error);
-        res.status(500).send('Server error during registration');
-    }
-});
 
 // Admin Login
 router.post('/login', async (req, res) => {
@@ -173,11 +148,11 @@ router.get('/logout', (req, res) => {
     res.clearCookie('admintoken');
     res.redirect('/admin/login');
 });
-router.get('/delete-users', (req, res) => {
+router.get('/delete-users', adminVerify, (req, res) => {
   // Render the delete-users.ejs page
   res.render('./admin/delete-users'); 
 });
-router.get('/search-users', async (req, res) => {
+router.get('/search-users', adminVerify, async (req, res) => {
   const query = req.query.query; // Get the search query from the request
 
   if (!query) {
@@ -201,7 +176,7 @@ router.get('/search-users', async (req, res) => {
 });
 
 // Delete user route
-router.delete('/delete-user/:id', async (req, res) => {
+router.delete('/delete-user/:id', adminVerify, async (req, res) => {
   const userId = req.params.id;
 
   try {
@@ -216,6 +191,35 @@ router.delete('/delete-user/:id', async (req, res) => {
   } catch (err) {
     console.error('Error deleting user:', err);
     res.status(500).send('Error deleting user');
+  }
+});
+// GET: Render Create Admin Form
+router.get('/create-admin', adminVerify, (req, res) => {
+  res.render('./admin/register', { msg: null }); // Optionally pass a message
+});
+// Admin Registration
+router.post('/create-admin', async (req, res) => {
+  try {
+      const { name, username, password, uni_pass } = req.body;
+      const existingUser = await admin.findOne({ username });
+
+      if (existingUser) {
+          return res.redirect('/admin/login?msg=User+already+exists&formType=register');
+      }
+
+      if (uni_pass !== realuniPass) {
+          return res.redirect('/admin/login?msg=Invalid+credentials&formType=register');
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new admin({ name, username, password: hashedPassword });
+      await newUser.save();
+
+
+      return res.redirect('/admin/home');
+  } catch (error) {
+      console.error('Registration Error:', error);
+      res.status(500).send('Server error during registration');
   }
 });
 

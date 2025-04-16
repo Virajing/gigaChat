@@ -33,7 +33,7 @@
       </select>
     
       <label for="num" class="block text-gray-700 mt-4">Number of Months/Years:</label>
-      <input type="number" id="num" name="num" value="<%= num %>" class="bg-gray-100 p-2 rounded-md" min="1" required>
+      <input type="number" id="num" name="num" value="<%= num %>" class="bg-gray-100 p-2 rounded-md" min="1" max="100" required>
     
       <button type="submit" class="mt-4 bg-orange-500 text-white px-4 py-2 rounded-md">Show Data</button>
     </form>
@@ -59,7 +59,7 @@
     data: {
       labels: chartLabels,
       datasets: [{
-        label: 'Number of Posts',
+        label: 'Number of Posts Created',
         data: chartData,
         backgroundColor: 'rgba(255, 115, 0, 0.8)',
         borderRadius: 5
