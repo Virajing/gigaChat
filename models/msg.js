@@ -17,11 +17,7 @@ const msgSchema = new mongoose.Schema({
   likedBy: { 
     type: [String],
     default: [] },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }, { timestamps: true });
 
 // Create and export the Post model
 const Post = mongoose.model('Post', msgSchema);

@@ -4,12 +4,12 @@ module.exports = (req, res, next) => {
   const token = req.cookies.admintoken;
 
   if (!token) {
-    return res.status(401).redirect('/login');
+    return res.status(401).redirect('/admin/login');
   }
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    console.log("Decoded Token:", decoded);
+    // console.log("Decoded Token:", decoded);
     req.user = decoded;
     next();
   } catch (err) {

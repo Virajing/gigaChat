@@ -23,37 +23,61 @@
   <main class="flex-1 p-10">
     <h1 class="text-3xl font-semibold text-gray-800 mb-6">📊 Posts Overview</h1>
 
+
+    <!-- Form for selecting months/years -->
+    <form action="/admin/home" method="GET" class="mb-6">
+      <label for="period" class="block text-gray-700">Select Period:</label>
+      <select id="period" name="period" class="bg-gray-100 p-2 rounded-md">
+        <option value="month" <% if (period === 'month') { %>selected<% } %>>Month</option>
+        <option value="year" <% if (period === 'year') { %>selected<% } %>>Year</option>
+      </select>
+    
+      <label for="num" class="block text-gray-700 mt-4">Number of Months/Years:</label>
+      <input type="number" id="num" name="num" value="<%= num %>" class="bg-gray-100 p-2 rounded-md" min="1" required>
+    
+      <button type="submit" class="mt-4 bg-orange-500 text-white px-4 py-2 rounded-md">Show Data</button>
+    </form>
+    
+
     <!-- Chart Section -->
     <div class="bg-white p-6 rounded-lg shadow-md">
       <canvas id="postsChart" height="100"></canvas>
     </div>
   </main>
-
+  <!-- <fom id="initialForm" action="/admin/chart" method="GET" class="hidden">
+    <input type="hidden" name="period" value="year" />
+    <input type="hidden" name="num" value="100" />
+  </form>r -->
   <!-- Chart Script -->
   <script>
-    const ctx = document.getElementById('postsChart').getContext('2d');
-    const postsChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: <%- JSON.stringify(labels) %>, // e.g., ['Jan', 'Feb', 'Mar']
-        datasets: [{
-          label: 'Number of Posts',
-          data: <%- JSON.stringify(data) %>, // e.g., [12, 19, 3]
-          backgroundColor: 'rgba(255, 115, 0, 0.8)',
-          borderRadius: 5
-        }]
+  const chartLabels = JSON.parse('<%- JSON.stringify(labels) %>');
+  const chartData = JSON.parse('<%- JSON.stringify(data) %>');
+
+  const ctx = document.getElementById('postsChart').getContext('2d');
+  const postsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        label: 'Number of Posts',
+        data: chartData,
+        backgroundColor: 'rgba(255, 115, 0, 0.8)',
+        borderRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: { beginAtZero: true }
-        }
+      scales: {
+        y: { beginAtZero: true }
       }
-    });
-  </script>
+    }
+  });
+</script>
+
+  
 
 </body>
 </html>
