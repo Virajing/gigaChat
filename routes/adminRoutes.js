@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Post = require('../models/msg');
 const { getPostsByTime } = require('../middlewares/postControll');
+const User = require('../models/user');
 
 const realuniPass = process.env.UNI_PASS;
 const SECRET_KEY = process.env.ADMIN_SECRET_KEY;
@@ -172,10 +173,51 @@ router.get('/logout', (req, res) => {
     res.clearCookie('admintoken');
     res.redirect('/admin/login');
 });
+router.get('/delete-users', (req, res) => {
+  // Render the delete-users.ejs page
+  res.render('./admin/delete-users'); 
+});
+router.get('/search-users', async (req, res) => {
+  const query = req.query.query; // Get the search query from the request
 
-router.get('/delete-user', adminVerify, (req, res) => {
-  res.render('./admin/delete-users');
-})
+  if (!query) {
+    return res.json([]); // If no query, return an empty array
+  }
+
+  try {
+    // Search for users that match the query (case-insensitive)
+    const users = await User.find({
+      $or: [
+        { username: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } }
+      ]
+    }).limit(10);  // Limit results to 10
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error searching users:', err);
+    res.status(500).send('Error searching users');
+  }
+});
+
+// Delete user route
+router.delete('/delete-user/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the user by ID and delete them
+    const user = await User.findByIdAndDelete(userId);
+
+    if (user) {
+      res.status(200).send('User deleted successfully');
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).send('Error deleting user');
+  }
+});
 
 
 module.exports = router;
