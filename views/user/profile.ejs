@@ -4,11 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <!-- <style>
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Makes the image circular */
+            object-fit: cover; /* Ensures the image covers the area */
+        }
+    </style> -->
 </head>
 <body>
     <h1>User: <%= user.name %></h1>
     <p>Username: <%= user.username %></p>
     <p>Email: <%= user.email %></p>
+
+    <!-- Display Profile Picture -->
+    <!-- <% if (user.profilePic) { %>
+        <img src="../../public/uploads/proPic/<%= user.profilePic.split('/').pop() %>" alt="Profile Picture" class="profile-pic">
+    <% } %>
+
+    <!-- Form to Upload Profile Picture -->
+    <!-- <form action="/upload-profile-pic" method="POST" enctype="multipart/form-data">
+        <input type="file" name="profilePic" accept="image/*" required>
+        <button type="submit">Upload Profile Picture</button>
+    </form> --> -->
 
     <form action="/profile/create-post" method="POST">
         <textarea name="content" placeholder="Write your post here..." required></textarea><br>

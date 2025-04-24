@@ -3,24 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
+    <!-- <style>
+        .message {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .message img {
+            width: 40px; /* Size of the circular image */
+            height: 40px;
+            border-radius: 50%; /* Makes the image circular */
+            object-fit: cover; /* Ensures the image covers the area */
+            margin-right: 10px; /* Space between image and text */
+        }
+    </style> -->
 </head>
 <body>
-    <h1>My Posts:</h1>
-<% posts.forEach(post => { %>
-    <div id="post-<%= post._id %>">
-        <strong><%= post.sender %></strong>: <%= post.content %>
-        <p>Likes: <span id="likes-<%= post._id %>"><%= post.likes %></span></p>
-
-        <!-- Like Button -->
-        <button id="like-btn-<%= post._id %>" 
-                onclick="toggleLike('<%= post._id %>')" 
-                data-liked="<%= post.likedBy.includes(post.sender) %>">
-            <%= post.likedBy.includes(post.sender) ? 'Dislike' : 'Like' %>
-        </button>
-
-    </div>
-<% }); %>
+    <h1>Messages:</h1>
+    <% posts.forEach(post => { %>
+        <div class="message">
+            <!-- <% const profilePic = userMap[post.sender]; %>
+            <% if (profilePic) { %>
+                <img src="<%= profilePic.split('/').pop() %>" alt="Profile Picture">
+            <% } %> -->
+            <strong><%= post.sender %></strong>: <%= post.content %>
+            <h5>Likes: <strong><%= post.likes %></strong></h5>
+        </div>
+    <% }); %>
 
 <script>
     function toggleLike(postId) {

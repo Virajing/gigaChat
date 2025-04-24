@@ -7,15 +7,28 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const verify = require('../middlewares/jwtVerify');  // Middleware import
 const profileRoutes = require('./profileRoutes/userProfile');
 const post = require('../models/msg');
+const bcrypt = require('bcrypt');
+const multer = require('multer');
+const path = require('path');
 
+// // Set up multer for file storage
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, './public/uploads/proPic'); // Specify the directory to save uploaded files
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to filename
+//     }
+// });
 
+// const upload = multer({ storage: storage });
 
 router.get('/', function (req, res) {
     res.redirect('/dashboard');
 })
 // User login route
 router.get('/login', (req, res) => {
-    res.render('./user/login', { msg: '', username: '' });
+    res.render('./user/login', { msg: '', username: '', formType: 'login' });
 });
 
 router.post('/login', async (req, res) => {
@@ -23,8 +36,8 @@ router.post('/login', async (req, res) => {
 
     try {
         const existingUser = await user.findOne({ email });
-
-        if (existingUser && existingUser.password === password) {
+        const validPassword = await bcrypt.compare(password, existingUser.password);
+        if (existingUser && existingUser.password === validPassword) {
             const payload = {
                 name: existingUser.name, 
                 username: existingUser.username,
@@ -65,8 +78,8 @@ router.post('/register', async (req, res) => {
         if (existingUser) {
             return res.render('./user/login', { msg: 'User already exists' });
         }
-
-        const newUser = new user({ name, email, username, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new user({ name, email, username, password: hashedPassword });
         await newUser.save();
 
         const payload = { name, username, email };
@@ -89,7 +102,15 @@ router.post('/register', async (req, res) => {
 router.get('/dashboard', verify, async (req, res) => {
     try {
         const messages = await post.find({});
-        res.render('./user/dashboard', { posts: messages }); // Pass messages to the view
+        const users = await user.find({}); // Fetch all users to map their profile pictures
+
+        // Create a map of usernames to profile pictures
+        const userMap = {};
+        users.forEach(u => {
+            userMap[u.username] = u.profilePic; // Map username to profile picture URL
+        });
+
+        res.render('./user/dashboard', { posts: messages, userMap }); // Pass userMap to the view
     } catch (err) {
         console.error("Error fetching posts:", err);
         res.status(500).send('Server error');
@@ -114,5 +135,24 @@ const existingUserPosts = await post.find({ sender: userdata.username });
     
 });
 
+// // Route to upload profile picture
+// router.post('/upload-profile-pic', verify, upload.single('profilePic'), async (req, res) => {
+//     try {
+//         const token = req.cookies.authToken;
+//         const userdata = jwt.verify(token, SECRET_KEY);
+//         const userId = userdata.username; // Assuming username is unique
+
+//         // Update user profile picture URL
+//         await user.findOneAndUpdate(
+//             { username: userId },
+//             { profilePic: req.file.path } // Save the file path in the database
+//         );
+
+//         res.redirect('/profile'); // Redirect to profile page
+//     } catch (error) {
+//         console.error('Error uploading profile picture:', error);
+//         res.status(500).send('Error uploading profile picture');
+//     }
+// });
 
 module.exports = router;

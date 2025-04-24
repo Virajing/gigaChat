@@ -18,9 +18,9 @@ function generateTokenAndSetCookie(res, payload) {
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
 
     res.cookie('admintoken', token, {
-        httpOnly: true,
+                    httpOnly: true, 
         secure: process.env.NODE_ENV === 'production', // only secure in production
-        sameSite: 'Strict',
+                    sameSite: 'Strict', 
         maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
     });
 }
@@ -109,8 +109,8 @@ function getMonthName(monthNumber) {
   });
 // Render Login/Register Page with messages
 router.get('/login', (req, res) => {
-    const { msg = "", formType = "login" } = req.query;
-    res.render("admin/login", { msg, formType });
+  const msg = req.query.msg || null;  // Grab it from query
+  res.render("./admin/login", { msg }); // Pass it to EJS
     console.log("Incoming cookies:", req.cookies);
 console.log("admintoken:", req.cookies.admintoken);
 
@@ -125,7 +125,7 @@ router.post('/login', async (req, res) => {
         const existingUser = await admin.findOne({ username });
 
         if (!existingUser) {
-            return res.redirect('/admin/login?msg=Incorrect+credentials&formType=login');
+            return res.redirect('/admin/login?msg=incorrectDetails');
         }
 
         const validPassword = await bcrypt.compare(password, existingUser.password);
@@ -135,7 +135,7 @@ router.post('/login', async (req, res) => {
             generateTokenAndSetCookie(res, payload);
             return res.redirect('/admin/home');
         } else {
-            return res.redirect('/admin/login?msg=Incorrect+credentials&formType=login');
+            return res.redirect('/admin/login?msg=incorrectDetails');
         }
     } catch (error) {
         console.error('Login Error:', error);
@@ -177,21 +177,23 @@ router.get('/search-users', adminVerify, async (req, res) => {
 
 // Delete user route
 router.delete('/delete-user/:id', adminVerify, async (req, res) => {
-  const userId = req.params.id;
+    const userId = req.params.id;
 
-  try {
-    // Find the user by ID and delete them
-    const user = await User.findByIdAndDelete(userId);
+    try {
+        // Find the user by ID and delete them
+        const user = await User.findByIdAndDelete(userId);
 
-    if (user) {
-      res.status(200).send('User deleted successfully');
-    } else {
-      res.status(404).send('User not found');
+        if (user) {
+            // Clear the user's cookies if they are logged in
+            res.clearCookie('authToken'); // Clear the auth token cookie
+            res.status(200).send('User deleted successfully');
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        res.status(500).send('Error deleting user');
     }
-  } catch (err) {
-    console.error('Error deleting user:', err);
-    res.status(500).send('Error deleting user');
-  }
 });
 // GET: Render Create Admin Form
 router.get('/create-admin', adminVerify, (req, res) => {
@@ -204,11 +206,11 @@ router.post('/create-admin', async (req, res) => {
       const existingUser = await admin.findOne({ username });
 
       if (existingUser) {
-          return res.redirect('/admin/login?msg=User+already+exists&formType=register');
+          return res.redirect('/admin/create-admin?msg=User+already+exists&formType=register');
       }
 
       if (uni_pass !== realuniPass) {
-          return res.redirect('/admin/login?msg=Invalid+credentials&formType=register');
+          return res.redirect('/admin/create-admin?msg=Invalid+credentials&formType=register');
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
