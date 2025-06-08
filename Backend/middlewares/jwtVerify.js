@@ -1,22 +1,25 @@
 // middlewares/jwtVerify.js
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const SECRET_KEY = process.env.SECRET_KEY;  // Same key for signing and verifying tokens
+const secret = process.env.SECRET_KEY;  // Same key for signing and verifying tokens
 
-const protectRoute = (req, res, next) => {
-    try {
-        const token = req.cookies.authToken; // Access token from cookie
+// In verify middleware:
+const verify = (req, res, next) => {
+  const token = req.cookies.authToken;
+  if (!token) {
+    // Instead of rendering HTML, send a JSON error
+    console.log('frontend req recieved');
+    return res.status(401).json({ error: 'Unauthorized' });
+    
+  }
 
-        if (!token) {
-            return res.status(401).redirect('/login');
-        }
+  jwt.verify(token, secret, (err, decoded) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
 
-        const verifiedUser = jwt.verify(token, SECRET_KEY);  // Verify JWT
-        req.user = verifiedUser;  // Attach user info to req.user if needed
-        next();  // Pass control to the next middleware/route
-    } catch (error) {
-        console.error('JWT Verification Error:', error.message);
-        res.status(403).redirect('/login')}
+    req.user = decoded;
+    next();
+  });
 };
 
-module.exports = protectRoute;
+
+module.exports = verify;

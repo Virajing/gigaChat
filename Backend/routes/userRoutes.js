@@ -10,7 +10,8 @@ const post = require('../models/msg');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const path = require('path');
-
+const { log } = require('console');
+const Redirect = require('../middlewares/redirectIfLoggedin');
 // // Set up multer for file storage
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
@@ -23,39 +24,44 @@ const path = require('path');
 
 // const upload = multer({ storage: storage });
 
-router.get('/', function (req, res) {
-    res.redirect('/dashboard');
+router.get('/test', function (req, res) {
+    res.send(id)
 })
-// User login route
-router.get('/login', (req, res) => {
-    res.render('./user/login', { msg: '', username: '', formType: 'login' });
-});
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+router.post('/login', Redirect, async (req, res) => {
+    const { username, password } = req.body;
+
+    console.log(req.body);
 
     try {
-        const existingUser = await user.findOne({ email });
+        const existingUser = await user.findOne({ username });
+        console.log(existingUser)
+        if (!existingUser) {
+            return res.json({ success: false });
+        }
         const validPassword = await bcrypt.compare(password, existingUser.password);
-        if (existingUser && existingUser.password === validPassword) {
+        console.log(validPassword);
+        if (existingUser && validPassword) {
             const payload = {
                 name: existingUser.name, 
                 username: existingUser.username,
                 email: existingUser.email,
             };
+            console.log(payload);
 
             // Correct expiresIn value for 3 months (90 days)
             const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '90d' });
+            console.log(token)
 
             res.cookie('authToken', token, { 
                 httpOnly: true, 
                 secure: true,  // Ensures the cookie is only sent over HTTPS
-                sameSite: 'Strict', 
+                sameSite: 'Lax', 
                 maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days in milliseconds
             });
-            return res.redirect('/dashboard');
+            return res.json({ success: true });
         } else {
-            res.render('./user/login', { msg: 'Incorrect credentials' });
+            res.json({ success: false });
         }
     } catch (error) {
         console.error('Error during login:', error);
@@ -66,12 +72,14 @@ router.post('/login', async (req, res) => {
 router.get('/logout', function(req, res) {
     res.clearCookie('authToken');
     res.redirect('/');
-});
+});``
 
 // User registration route
-router.post('/register', async (req, res) => {
+router.post('/register', Redirect, async (req, res) => {
     try {
         const { name, email, username, password } = req.body;
+        console.log(req.body);
+        
 
         const existingUser = await user.findOne({ email });
 
@@ -88,7 +96,7 @@ router.post('/register', async (req, res) => {
         res.cookie('authToken', token, { 
             httpOnly: true, 
             secure: true,  // Ensures the cookie is only sent over HTTPS
-            sameSite: 'Strict', 
+            sameSite: 'Lax', 
             maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days in milliseconds
         });
         res.redirect('/dashboard');
@@ -110,7 +118,7 @@ router.get('/dashboard', verify, async (req, res) => {
             userMap[u.username] = u.profilePic; // Map username to profile picture URL
         });
 
-        res.render('./user/dashboard', { posts: messages, userMap }); // Pass userMap to the view
+        res.json({ posts: messages, userMap }); // Pass userMap to the view
     } catch (err) {
         console.error("Error fetching posts:", err);
         res.status(500).send('Server error');

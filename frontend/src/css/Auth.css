@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.login-container {
+  background: #000;
+  padding: 40px;
+  text-align: center;
+  border-radius: 10px;
+  width: 300px;
+}
+
+.logo {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 3rem;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  background: #1c1c1c;
+  color: #fff;
+}
+
+.login-form button {
+  width: 23.7vw;
+  padding: 12px;
+  background-color: #0095f6;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.divider {
+  margin: 20px 0;
+  color: #999;
+  font-weight: bold;
+}
+
+.signup-link span {
+  color: #0095f6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.slide-up {
+  animation: slideUp 1s ease forwards;
+}
+
+.slide-down {
+  animation: slideDown 1s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

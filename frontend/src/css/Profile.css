@@ -1,0 +1,92 @@
+.profile-container {
+    padding: 2rem;
+    background-color: #000;
+    color: #eee;
+  }
+  
+  .profile-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 1rem 0;
+    border: 3px solid #444;
+  }
+  
+  .post-form {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .post-form textarea {
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #111;
+    color: #eee;
+    resize: none;
+    height: 100px;
+  }
+  
+  .post-form button {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .post-form button:hover {
+    background-color: #666;
+  }
+  
+  .section-title {
+    margin-top: 3rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .post-card {
+    background-color: #111;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.05);
+  }
+  
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .delete-btn {
+    background: #222;
+    color: #aaa;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .delete-btn:hover {
+    background: #333;
+    color: #fff;
+  }

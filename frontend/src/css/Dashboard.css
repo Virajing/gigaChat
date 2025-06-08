@@ -1,0 +1,67 @@
+.dashboard-feed {
+  width: 100%;
+  max-width: 600px;
+  margin: 0
+}
+
+
+
+.feed-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #eee;
+}
+
+.feed-post {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.feed-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+  border: 2px solid #ff9900;
+}
+
+.feed-username {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.feed-content {
+  padding: 1rem;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.feed-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #333;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.centered-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+  color: #fff;
+  font-size: 1.2rem;
+}

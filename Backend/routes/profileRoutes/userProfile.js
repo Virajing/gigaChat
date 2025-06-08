@@ -13,7 +13,7 @@ router.post('/create-post', verify, async (req, res) => {
       const user = await User.findOne({ username });
 
       if (!user) {
-          return res.status(404).send("User not found");
+          return res.status(404).json({error: "User not found"});
       }
 
       const newPost = new Post({
@@ -22,10 +22,10 @@ router.post('/create-post', verify, async (req, res) => {
       });
 
       await newPost.save();
-      res.redirect('/profile');  
+      res.json({ success: true });  
   } catch (error) {
       console.error('Error creating post:', error);
-      res.render('./user/profile', { error: 'Error saving post, try again later...' });
+      res.json({ error: 'Error saving post, try again later...' });
   }
 });
 
@@ -34,19 +34,19 @@ router.post("/delete-post", async (req, res) => {
       const { postId } = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(postId)) {
-          return res.status(400).send("Invalid ID format");
+          return res.status(400).json({error: "Invalid ID format"});
       }
 
       const deletedPost = await Post.findByIdAndDelete(postId); // Use "Post" (capital P)
 
       if (!deletedPost) {
-          return res.status(404).send("Post not found");
+          return res.status(404).json({error:"Post not found"});
       }
 
-      res.redirect("/profile"); // Redirect after deletion
+      res.json({ success: true }); // Redirect after deletion
   } catch (error) {
       console.error("Error deleting post:", error);
-      res.status(500).send("Internal Server Error");
+      res.status(500).json({error: "Internal Server Error"});
   }
 });
 router.post("/like-post", verify, async (req, res) => {
